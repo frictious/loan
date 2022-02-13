@@ -1,5 +1,16 @@
 const   nodemailer              = require('nodemailer');
 
+require("dotenv").config();
+//Nodemailer configuration
+const transport = nodemailer.createTransport({
+    service : "gmail",
+    auth:{
+        type: "login",
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+});
+
 // INDEX PAGE
 exports.index = (req, res) => {
     res.render("index", {
@@ -28,6 +39,32 @@ exports.contact = (req, res) => {
     });
 }
 
+// CONTACT FORM LOGIC
+exports.contactLogic = (req, res) => {
+    //Send mail to student after successful registration
+    const mailOptions = {
+        from: req.body.email,
+        to: process.env.EMAIL,
+        subject : `Loan System Contact Form Message`,
+        html: `<p>The following message is from the contact form</p>
+        <p>The message is from ${req.body.name} </p>
+        <p>The email is ${req.body.email} </p>
+        <p>
+            ${req.body.message}
+        </p>`
+    }
+
+    //Sending mail
+    transport.sendMail(mailOptions, (err, mail) => {
+        if(!err){
+            console.log("MAIL SENT TO ADMIN");
+            res.redirect("/contact");
+        }else{
+            console.log(err);
+        }
+    });
+}
+
 // APPLY PAGE
 exports.apply = (req, res) => {
     res.render("apply", {
@@ -35,6 +72,7 @@ exports.apply = (req, res) => {
     });
 }
 
+// LOGIN PAGE
 exports.login = (req, res) => {
     res.render("login", {
         title : "Loan System Login Page"

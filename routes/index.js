@@ -15,6 +15,9 @@ router.get("/services", indexController.services);
 // CONTACT
 router.get("/contact", indexController.contact);
 
+// CONTACT FORM LOGIC
+router.post("/contact", indexController.contactLogic);
+
 // APPLY
 router.get("/apply", indexController.apply);
 
