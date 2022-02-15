@@ -1,4 +1,5 @@
-const   nodemailer              = require('nodemailer');
+const   nodemailer              = require('nodemailer'),
+        Request                 = require("../models/requests");
 
 require("dotenv").config();
 //Nodemailer configuration
@@ -69,6 +70,35 @@ exports.contactLogic = (req, res) => {
 exports.apply = (req, res) => {
     res.render("apply", {
         title : "Loan System Apply Page"
+    });
+}
+
+// APPLICATION REQUEST LOGIC
+exports.request = (req, res) => {
+    Request.create({
+        customer : req.user._id,
+        amount : req.body.amount,
+        purpose : req.body.purpose,
+        type : req.body.type,
+        duration : req.body.duration,
+        groupmemberone : req.body.groupmemberone,
+        groupmembertwo : req.body.groupmembertwo,
+        groupmemberthree : req.body.groupmemberthree,
+        groupmemberfour : req.body.groupmemberfour,
+        groupmemberfive : req.body.groupmemberfive,
+        groupmembersix : req.body.groupmembersix,
+        groupmemberseven : req.body.groupmemberseven,
+        groupmembereight : req.body.groupmembereight,
+        groupmembernine : req.body.groupmembernine,
+        groupmemberten : req.body.groupmemberten
+    })
+    .then(request => {
+        console.log("REQUEST MADE SUCCESSFULLY");
+        res.redirect("back");
+    })
+    .catch(err => {
+        console.log(err);
+        res.redirect("back");
     });
 }
 
