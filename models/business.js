@@ -12,10 +12,7 @@ const businessSchema = mongoose.Schema({
     bankAccountNo : Number,
     isTaxPayer : String, // YES OR NO
     TIN : String,
-    customer : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Customer"
-    }
+    customer : String
 });
 
 module.exports = mongoose.model("Business", businessSchema);

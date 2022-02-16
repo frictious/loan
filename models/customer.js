@@ -15,7 +15,8 @@ const customerSchema = mongoose.Schema({
     monthlyExpenditure : Number,
     memberNo : Number,
     mothersName : String,
-    fathersName : String
+    fathersName : String,
+    role : String,
 });
 
 module.exports = mongoose.model("Customers", customerSchema);

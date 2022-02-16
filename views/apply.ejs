@@ -21,6 +21,7 @@
                         <div class="apply-wrapper">
                             <!-- Form -->
                             <form action="/request" method="POST">
+                                <input type="hidden" name="id" value="<%- user._id %>">
                                 <div class="row">
                                     <div class="col-lg-6">
                                        <div class="single-form">
@@ -144,7 +145,7 @@
                                      
                                     </div>
                                 <div class="text-center">
-                                    <button type="button" class="btn apply-btn mt-30">APPLY NOW </button>
+                                    <button type="submit" class="btn apply-btn">APPLY NOW </button>
                                 </div>
                             </form>
                             <!-- End From -->

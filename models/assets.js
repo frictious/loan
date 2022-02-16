@@ -5,10 +5,7 @@ const assetSchema = mongoose.Schema({
     particulars : String,
     quantity : Number,
     marketValue : Number, // Price in the market
-    customer : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Customer"
-    },
+    customer : String,
     acres : Number,
     plotNo : Number,
     houseNo : Number,

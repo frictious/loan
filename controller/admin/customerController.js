@@ -17,7 +17,7 @@ const   Customer                = require("../../models/customer"),
 require("dotenv").config();
 
 // CONFIG
-require("../../config/adminLogin")(passport);
+require("../../config/login")(passport);
 
 // NODEMAILER CONFIG
 const transport = nodemailer.createTransport({
@@ -154,11 +154,39 @@ exports.addCustomerLogic = (req, res) => {
             monthlyExpenditure : req.body.monthlyExpenditure,
             memberNo : req.body.memberNo,
             mothersName : req.body.mothersName,
-            fathersName : req.body.fathersName
+            fathersName : req.body.fathersName,
+            role : "Customer"
         })
         .then(customer => {
-            console.log("CUSTOMER INFORMATION ADDED SUCCESSFULLY");
-            res.redirect(`/admin/business/add/${customer._id}`);
+            const link = `${req.headers.host}/setpassword/${customer._id}`;
+            const mailOptions = {
+                from: process.env.EMAIL,
+                to: customer.email,
+                subject: "BRAC SL Microfinance Customer Account Information",
+                html: `<p>Dear ${customer.name},</p> <p>Thank you for opening an account with us as at BRAC SL.</p>
+                <p>We want to take this moment to welcome you to our family and also give you a one time link to give your account a password, which will be used to apply for a loan via out platform.</p>
+                <p>Please bear in mind that this link will only work once. Ensure you provide a secure password that will be used on your account.</p>
+
+                <a href=http://${link}>Click Here</a>
+
+                <p>Thank you for registering</p>
+
+                <p>Regards</p>
+
+                <p>BRAC SL Management</p>
+                `
+            }
+
+            transport.sendMail(mailOptions, (err, mail) => {
+                if(!err){
+                    console.log("MAIL SENT SUCCESSFULLY");
+                    console.log("CUSTOMER INFORMATION ADDED SUCCESSFULLY");
+                    res.redirect(`/admin/business/add/${customer._id}`);
+                }else{
+                    console.log(err);
+                    res.redirect("back");
+                }
+            });
         })
         .catch(err => {
             console.log(err);

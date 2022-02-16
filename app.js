@@ -13,7 +13,8 @@ const app = express();
 global.Promise = mongoose.Promise
 mongoose.connect(process.env.MONGODB, {
     useNewUrlParser : true,
-    useUnifiedTopology : true
+    useUnifiedTopology : true,
+    useFindAndModify : false,
 });
 
 // CONFIG

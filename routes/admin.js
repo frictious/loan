@@ -3,15 +3,15 @@ const   express                     = require('express'),
         customerController          = require("../controller/admin/customerController"),
         loanController              = require("../controller/admin/loanController"),
         businessController          = require("../controller/admin/businessController"),
+        assetController             = require("../controller/admin/assetController"),
+        guarantorController         = require("../controller/admin/guarantorController"),
         passport                    = require("passport"),
         mongoose                    = require("mongoose"),
-        bcrypt                      = require("bcryptjs"),
         crypto                      = require("crypto"),
         path                        = require("path"),
         multer                      = require("multer"),
         {GridFsStorage}             = require("multer-gridfs-storage"),
-        Grid                        = require("gridfs-stream"),
-        nodemailer                  = require("nodemailer");
+        Grid                        = require("gridfs-stream");
 
 const router = express.Router();
 
@@ -86,6 +86,7 @@ router.delete("/customer/:id", customerController.deleteCustomer);
 // ====================================================================================
 
 // ====================================================================================
+// LOAN SECTION
 // REQUESTS
 router.get("/requests", loanController.requests);
 
@@ -142,13 +143,41 @@ router.post("/login", adminController.loginLogic);
 router.get("/business/add/:id", businessController.addBusinessInformation);
 
 // ADD BUSINESS INFORMATION FORM LOGIC
-router.post("/business/add/:id", businessController.addBusinessInformationLogic);
+router.post("/business/add", businessController.addBusinessInformationLogic);
 
 // EDIT BUSINESS INFORMATION FORM
 router.get("/business/edit/:id", businessController.editbusiness);
 
 // EDIT BUSINESS INFORMATION FORM LOGIC
 router.put("/business/edit/:id", businessController.editBusinessLogic);
+
+// =========================================================================================
+// ASSETS SECTION
+// ADD ASSET INFORMATION FORM
+router.get("/asset/add/:id", assetController.addAssetInformation);
+
+// ADD ASSET INFORMATION FORM LOGIC
+router.post("/asset/add", files.single("document"), assetController.addAssetInformationLogic);
+
+// EDIT ASSET INFORMATION FORM
+router.get("/asset/edit/:id", assetController.editAsset);
+
+// EDIT ASSET INFORMATION FORM LOGIC
+router.put("/asset/edit/:id", files.single("document"), assetController.editAssetLogic);
+
+// =========================================================================================
+// GUARANTORS SECTION
+// ADD GUARANTORS INFORMATION FORM
+router.get("/guarantor/add/:id", guarantorController.addGuarantorInformation);
+
+// ADD GUARANTORS INFORMATION FORM LOGIC
+router.post("/guarantor/add", files.single("picture"), guarantorController.addGuarantorInformationLogic);
+
+// EDIT GUARANTORS INFORMATION FORM
+router.get("/guarantor/edit/:id", guarantorController.editGuarantor);
+
+// EDIT GUARANTORS INFORMATION FORM LOGIC
+router.put("/guarantor/edit/:id", files.single("picture"), guarantorController.edituarantorLogic);
 
 // EXPORTING THE ROUTER
 module.exports = router;

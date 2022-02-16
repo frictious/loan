@@ -17,10 +17,7 @@ const guarantorSchema = mongoose.Schema({
         type : Date,
         default : Date.now()
     },
-    customer : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Customer"
-    }
+    customer : String
 });
 
 module.exports = mongoose.model("Guarantors", guarantorSchema);

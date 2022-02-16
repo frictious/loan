@@ -1,10 +1,11 @@
-const   Asset                    = require("../../models/assets"),
-        Customer                    = require("../../models/customer"),        
+const   Asset                   = require("../../models/assets"),
+        Customer                = require("../../models/customer"),        
         crypto                  = require("crypto"),
         path                    = require("path"),
         multer                  = require("multer"),
         {GridFsStorage}         = require("multer-gridfs-storage"),
         Grid                    = require("gridfs-stream"),
+        mongoose                = require("mongoose")
         nodemailer              = require("nodemailer");
 
 require("dotenv").config();
@@ -65,8 +66,16 @@ const cpUpload = files.fields([{ name: 'front', maxCount: 1 }, { name: 'back', m
 // ASSET SECTION
 // ADD ASSET FORM
 exports.addAssetInformation = (req, res) => {
-    res.render("admin/asset/addAsset", {
-        title : "Microfinance Admin Dashboard Add Customer Assets Page",
+    Customer.findById({_id : req.params.id})
+    .then(customer => {
+        res.render("admin/asset/addAsset", {
+            title : "Microfinance Admin Dashboard Add Customer Assets Page",
+            customer : customer
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.redirect("back");
     });
 }
 
@@ -81,13 +90,38 @@ exports.addAssetInformationLogic = (req, res) => {
         plotNo : req.body.plotNo,
         houseNo : req.body.houseNo,
         otherIdentification : req.body.otherIdentification,
-        document : req.files.filename,
-        documentName : req.files.originalName,
-        customer : req.params.id
+        document : req.file.filename,
+        documentName : req.file.originalName,
+        customer : req.body.id
     })
     .then(asset => {
-        console.log("CUSTOMER ASSET INFORMATION ADDED SUCCESSFULLY");
-        res.redirect(`/admin/guarantor/${req.params.id}`);
+        Customer.findById({_id : req.body.id})
+        .then(customer => {
+            const mailOptions = {
+                from: process.env.EMAIL,
+                to: customer.email,
+                subject: "BRAC SL Microfinance Customer Account Information",
+                html: `<p>Dear ${customer.name},</p> <p>Your asset <strong>${asset.name}'s</strong> information has been entered successfully into our database.</p>
+                
+                <p>Thank you for registering your asset information with us to help fast track your loan process in the future.</p>
+    
+                <p>Regards</p>
+    
+                <p>BRAC SL Management</p>
+                `
+            }
+    
+            transport.sendMail(mailOptions, (err, mail) => {
+                if(!err){
+                    console.log("MAIL SENT SUCCESSFULLY");
+                    console.log("CUSTOMER ASSET INFORMATION ADDED SUCCESSFULLY");
+                    res.redirect(`/admin/guarantor/add/${customer._id}`);
+                }else{
+                    console.log(err);
+                    res.redirect("back");
+                }
+            });
+        })
     })
     .catch(err => {
         console.log(err);

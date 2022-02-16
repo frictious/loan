@@ -12,11 +12,7 @@ const loanSchema = mongoose.Schema({
     amountDue : Number,
     amountPaid : Number,
     type : String, // The type of loan, whether individual or group
-    customer : {
-        required : true,
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
-    },
+    customer : String,
     approvedBy : String,
     groupmemberone : String,
     groupmembertwo : String,

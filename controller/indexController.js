@@ -1,5 +1,10 @@
 const   nodemailer              = require('nodemailer'),
+        Customer                = require("../models/customer"),
+        bcrypt                  = require("bcryptjs"),
+        passport                = require("passport"),
         Request                 = require("../models/requests");
+
+require("../config/login")(passport);
 
 require("dotenv").config();
 //Nodemailer configuration
@@ -76,7 +81,7 @@ exports.apply = (req, res) => {
 // APPLICATION REQUEST LOGIC
 exports.request = (req, res) => {
     Request.create({
-        customer : req.user._id,
+        customer : req.body.id,
         amount : req.body.amount,
         purpose : req.body.purpose,
         type : req.body.type,
@@ -107,4 +112,57 @@ exports.login = (req, res) => {
     res.render("login", {
         title : "Loan System Login Page"
     });
+}
+
+// LOGIN LOGIC
+exports.loginLogic = (req, res, next) => {
+    passport.authenticate("local", {
+        successRedirect : "/apply",
+        failureRedirect : "/login"
+    })(req, res, next);
+}
+
+// LOGOUT LOGIC
+exports.logout = (req, res) => {
+    req.logout();
+    res.redirect("/");
+}
+
+// SETPASSWORD
+exports.setpassword = (req, res) => {
+    Customer.findById({_id : req.params.id})
+    .then(customer => {
+        res.render("setpassword", {
+            title : "New Customer Account Password Set",
+            customer: customer
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.redirect("back");
+    });
+}
+
+// SETPASSWORD LOGIC
+exports.setpasswordLogic = (req, res) => {
+    if(req.body.password === req.body.repassword){
+        bcrypt.genSalt(10)
+        .then(salt => {
+            bcrypt.hash(req.body.password, salt)
+            .then(hash => {
+                Customer.findByIdAndUpdate({_id : req.body.id}, {password : hash})
+                .then(customer => {
+                    console.log("CUSTOMER SET PASSWORD SUCCESSFULLY");
+                    res.redirect("/login");
+                })
+            })
+        })
+        .catch(err => {
+            console.log(err);
+            res.redirect("back");
+        });
+    }else{
+        console.log("PASSWORDS DO NOT MATCH");
+        res.redirect("back");
+    }
 }

@@ -1,9 +1,11 @@
 const   Guarantor               = require("../../models/guarantor"),
+        Customer                = require("../../models/customer"),
         crypto                  = require("crypto"),
         path                    = require("path"),
         multer                  = require("multer"),
         {GridFsStorage}         = require("multer-gridfs-storage"),
         Grid                    = require("gridfs-stream"),
+        mongoose                = require("mongoose"),
         nodemailer              = require("nodemailer");
 
 require("dotenv").config();
@@ -64,8 +66,16 @@ const cpUpload = files.fields([{ name: 'front', maxCount: 1 }, { name: 'back', m
 // GUARANTOR SECTION
 // ADD GUARANTOR FORM
 exports.addGuarantorInformation = (req, res) => {
-    res.render("admin/guarantor/addGuarantor", {
-        title : "Microfinance Admin Dashboard Add Customer Guarantors Page",
+    Customer.findById({_id : req.params.id})
+    .then(customer => {
+        res.render("admin/guarantor/addGuarantor", {
+            title : "Microfinance Admin Dashboard Add Customer Guarantors Page",
+            customer : customer
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.redirect("back");
     });
 }
 
@@ -74,8 +84,8 @@ exports.addGuarantorInformationLogic = (req, res) => {
     Guarantor.create({
         name : req.body.name,
         age : req.body.age,
-        picture : req.files.filename,
-        pictureName : req.files.originalName,
+        picture : req.file.filename,
+        pictureName : req.file.originalName,
         residentialAddress : req.body.residentialAddress,
         permanentAddress : req.body.permanentAddress,
         mobile : req.body.mobile,
@@ -84,11 +94,36 @@ exports.addGuarantorInformationLogic = (req, res) => {
         relationship : req.body.relationship,
         nationalIDNumber : req.body.nationalIDNumber,
         monthlyIncome : req.body.monthlyIncome,
-        customer : req.params.id
+        customer : req.body.id
     })
     .then(guarantor => {
-        console.log("CUSTOMER GUARANTOR INFORMATION ADDED SUCCESSFULLY");
-        res.redirect("/admin/customers");
+        Customer.findById({_id : req.body.id})
+        .then(customer => {
+            const mailOptions = {
+                from: process.env.EMAIL,
+                to: customer.email,
+                subject: "BRAC SL Microfinance Customer Account Information",
+                html: `<p>Dear ${customer.name},</p> <p>Your guarantor <strong>${guarantor.name}'s</strong> information has been entered successfully into our database.</p>
+                
+                <p>Thank you for registering your guarantor's information with us to help fast track your loan process in the future.</p>
+    
+                <p>Regards</p>
+    
+                <p>BRAC SL Management</p>
+                `
+            }
+    
+            transport.sendMail(mailOptions, (err, mail) => {
+                if(!err){
+                    console.log("MAIL SENT SUCCESSFULLY");
+                    console.log("CUSTOMER GUARANTOR INFORMATION ADDED SUCCESSFULLY");
+                    res.redirect("/admin/customers");
+                }else{
+                    console.log(err);
+                    res.redirect("back");
+                }
+            });
+        })
     })
     .catch(err => {
         console.log(err);
@@ -140,7 +175,7 @@ exports.edituarantorLogic = (req, res) => {
     }else{
         Guarantor.findByIdAndUpdate({_id : req.params.id}, {
             name : req.body.name,
-            age : req.body.age
+            age : req.body.age,
             residentialAddress : req.body.residentialAddress,
             permanentAddress : req.body.permanentAddress,
             mobile : req.body.mobile,

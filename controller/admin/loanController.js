@@ -91,8 +91,33 @@ exports.addLoanLogic = (req, res) => {
         groupmemberten : req.body.groupmemberten
     })
     .then(loan => {
-        console.log("CUSTOMER LOAN INFORMATION ADDED SUCCESSFULLY");
-        res.redirect(`/admin/loan/${req.params.id}`);
+        Customer.findById({_id : req.params.id})
+        .then(customer => {
+            const mailOptions = {
+                from: process.env.EMAIL,
+                to: customer.email,
+                subject: "BRAC SL Microfinance Loan Information",
+                html: `<p>Dear ${customer.name},</p> <p>Your loan for <strong>${loan.amount}</strong> information has been entered received successfully and is currently being processed.</p>
+                
+                <p>You will receive a confirmation or rejection message once the process is complete</p>
+    
+                <p>Regards</p>
+    
+                <p>BRAC SL Management</p>
+                `
+            }
+    
+            transport.sendMail(mailOptions, (err, mail) => {
+                if(!err){
+                    console.log("MAIL SENT SUCCESSFULLY");
+                    console.log("CUSTOMER LOAN INFORMATION ADDED SUCCESSFULLY");
+                    res.redirect(`/admin/loan/${req.params.id}`);
+                }else{
+                    console.log(err);
+                    res.redirect("back");
+                }
+            });
+        })
     })
     .catch(err => {
         console.log(err);
