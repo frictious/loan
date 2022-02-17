@@ -4,6 +4,7 @@ const customerSchema = mongoose.Schema({
     name : String,
     age : Number,
     address : String,
+    contact : String,
     email : String,
     password : String,
     picture : String,

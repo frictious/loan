@@ -1,5 +1,6 @@
 const   nodemailer              = require('nodemailer'),
         Customer                = require("../models/customer"),
+        Loan                    = require("../models/loan"),
         bcrypt                  = require("bcryptjs"),
         passport                = require("passport"),
         Request                 = require("../models/requests");
@@ -81,7 +82,7 @@ exports.apply = (req, res) => {
 // APPLICATION REQUEST LOGIC
 exports.request = (req, res) => {
     Request.create({
-        customer : req.body.id,
+        customer : req.user._id,
         amount : req.body.amount,
         purpose : req.body.purpose,
         type : req.body.type,
@@ -95,11 +96,35 @@ exports.request = (req, res) => {
         groupmemberseven : req.body.groupmemberseven,
         groupmembereight : req.body.groupmembereight,
         groupmembernine : req.body.groupmembernine,
-        groupmemberten : req.body.groupmemberten
+        groupmemberten : req.body.groupmemberten,
+        status : "Pending",
     })
     .then(request => {
-        console.log("REQUEST MADE SUCCESSFULLY");
-        res.redirect("back");
+        Loan.create({
+            request : request._id,
+            amount : req.body.amount,
+            duration : req.body.duration,
+            installmentSize : req.body.duration,
+            purpose : req.body.purpose,
+            interest : (0.4 * req.body.amount), // Interest is 40% fixed
+            status : "Pending",
+            type : req.body.type,
+            customer : req.user._id,
+            groupmemberone : req.body.groupmemberone,
+            groupmembertwo : req.body.groupmembertwo,
+            groupmemberthree : req.body.groupmemberthree,
+            groupmemberfour : req.body.groupmemberfour,
+            groupmemberfive : req.body.groupmemberfive,
+            groupmembersix : req.body.groupmembersix,
+            groupmemberseven : req.body.groupmemberseven,
+            groupmembereight : req.body.groupmembereight,
+            groupmembernine : req.body.groupmembernine,
+            groupmemberten : req.body.groupmemberten
+        })
+        .then(loan => {
+            console.log("LOAN REQUEST MADE SUCCESSFULLY");
+            res.redirect("back");
+        })
     })
     .catch(err => {
         console.log(err);

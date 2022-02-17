@@ -11,9 +11,15 @@ const loanSchema = mongoose.Schema({
     status : String, // Whether the loan was approved or not
     amountDue : Number,
     amountPaid : Number,
+    amountPaying : Number,
     type : String, // The type of loan, whether individual or group
-    customer : String,
+    customer : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Customer"
+    },
     approvedBy : String,
+    from : Date, // When the loan was approved
+    to : Date, // When the loan  should be paid
     groupmemberone : String,
     groupmembertwo : String,
     groupmemberthree : String,
@@ -24,6 +30,10 @@ const loanSchema = mongoose.Schema({
     groupmembereight : String,
     groupmembernine : String,
     groupmemberten : String,
+    request : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Request"
+    },
 });
 
 module.exports = mongoose.model("Loan", loanSchema);

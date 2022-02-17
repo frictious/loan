@@ -90,6 +90,18 @@ router.delete("/customer/:id", customerController.deleteCustomer);
 // REQUESTS
 router.get("/requests", loanController.requests);
 
+// APPROVE REQUEST FORM
+router.get("/request/approve/:id", loanController.approverequest);
+
+// APPROVE REQUEST FORM LOGIC
+router.put("/request/approve/:id", loanController.approverequestLogic);
+
+// REJECT REQUEST FORM
+router.get("/request/reject/:id", loanController.rejectrequest);
+
+// REJECT REQUEST FORM LOGIC
+router.put("/request/reject/:id", loanController.rejectrequestLogic);
+
 // DELETE REQUEST
 router.delete("/request/:id", loanController.deleteRequest);
 
@@ -103,10 +115,10 @@ router.get("/loan/add", loanController.addLoan);
 router.post("/loan/add", loanController.addLoanLogic);
 
 // EDIT LOAN FORM
-router.get("/loan/edit/:id", loanController.editloan);
+router.get("/loan/:id", loanController.editloan);
 
 // EDIT LOAN FORM LOGIC
-router.put("/loan/edit/:id", loanController.editLoanLogic);
+router.put("/loan/:id", loanController.editLoanLogic);
 
 // DELETE LOAN LOGIC
 router.delete("loan/:id", loanController.deleteLoan);
