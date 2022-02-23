@@ -339,37 +339,70 @@ exports.editloan = (req, res) => {
 
 // EDIT LOAN FORM LOGIC
 exports.editLoanLogic = (req, res) => {
-    Loan.findByIdAndUpdate({_id : req.params.id}, {
-        amount : req.body.amount,
-        duration : req.body.duration,
-        installmentSize : req.body.installmentSize,
-        purpose : req.body.purpose, // Purpose of Loan
-        sectorName : req.body.sectorName,
-        sectorCode : req.body.sectorCode,
-        interest : req.body.interest, // Interest is 40% fixed
-        status : req.body.status, // Whether the loan was approved or not
-        amountDue : (req.body.amount - (req.body.amountPaid + req.body.amountPaying)),
-        amountPaid : (req.body.amountPaid + req.body.amountPaying),
-        amountPaying : req.body.amountPaying,
-        status : req.body.status,
-        from : req.body.from,
-        to : req.body.to,
-        approvedBy : req.user._id,
-        type : req.body.type, // The type of loan, whether individual or group
-        groupmemberone : req.body.groupmemberone,
-        groupmembertwo : req.body.groupmembertwo,
-        groupmemberthree : req.body.groupmemberthree,
-        groupmemberfour : req.body.groupmemberfour,
-        groupmemberfive : req.body.groupmemberfive,
-        groupmembersix : req.body.groupmembersix,
-        groupmemberseven : req.body.groupmemberseven,
-        groupmembereight : req.body.groupmembereight,
-        groupmembernine : req.body.groupmembernine,
-        groupmemberten : req.body.groupmemberten
-    })
-    .then(loan => {
-        console.log("CUSTOMER LOAN INFORMATION UPDATED SUCCESSFULLY");
-        res.redirect("back");
+    let amountD = 0;
+    let amountP = 0;
+    Loan.findById({_id : req.params.id})
+    .then(foundloan => {
+        amountD = foundloan.amountDue - req.body.amountPaying;
+        Loan.findByIdAndUpdate({_id : req.params.id}, {
+            amount : req.body.amount,
+            duration : req.body.duration,
+            purpose : req.body.purpose, // Purpose of Loan
+            sectorName : req.body.sectorName,
+            sectorCode : req.body.sectorCode,
+            interest : req.body.interest, // Interest is 40% fixed
+            status : req.body.status, // Whether the loan was approved or not
+            amountDue : amountD,
+            amountPaying : Number(req.body.amountPaying),
+            status : req.body.status,
+            from : req.body.from,
+            to : req.body.to,
+            approvedBy : req.user._id,
+            type : req.body.type, // The type of loan, whether individual or group
+            groupmemberone : req.body.groupmemberone,
+            groupmembertwo : req.body.groupmembertwo,
+            groupmemberthree : req.body.groupmemberthree,
+            groupmemberfour : req.body.groupmemberfour,
+            groupmemberfive : req.body.groupmemberfive,
+            groupmembersix : req.body.groupmembersix,
+            groupmemberseven : req.body.groupmemberseven,
+            groupmembereight : req.body.groupmembereight,
+            groupmembernine : req.body.groupmembernine,
+            groupmemberten : req.body.groupmemberten
+        })
+        .then(loan => {
+            if(loan.amoundDue >= 0){
+                Customer.findById({_id : req.params.id})
+                .then(customer => {
+                    const mailOptions = {
+                        from: process.env.EMAIL,
+                        to: customer.email,
+                        subject: "BRAC SL Microfinance Loan Information",
+                        html: `<p>Dear ${customer.name},</p> <p>The sum of <strong>Le ${req.body.amountPaying}</strong> has been paid for the <strong>Le ${loan.amount}</strong> loan you took on the <strong>${loan.from}</strong>.</p>
+                        <p>The remaining amount to pay is <strong>Le ${loan.amoundDue}</strong>
+                        .</p>
+                        
+                        <p>You will receive confirmation of payments messages anytime you pay your loaned money until it is complete.</p>
+            
+                        <p>Regards</p>
+            
+                        <p>BRAC SL Management</p>
+                        `
+                    }
+            
+                    transport.sendMail(mailOptions, (err, mail) => {
+                        if(!err){
+                            console.log("MAIL SENT SUCCESSFULLY");
+                            console.log("CUSTOMER LOAN INFORMATION UPDATED SUCCESSFULLY");
+                            res.redirect("back");
+                        }else{
+                            console.log(err);
+                            res.redirect("back");
+                        }
+                    });
+                })
+            }
+        })
     })
     .catch(err => {
         console.log(err);

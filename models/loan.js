@@ -17,7 +17,10 @@ const loanSchema = mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Customer"
     },
-    approvedBy : String,
+    approvedBy : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Customer"
+    },
     from : Date, // When the loan was approved
     to : Date, // When the loan  should be paid
     groupmemberone : String,

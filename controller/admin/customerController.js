@@ -17,7 +17,7 @@ const   Customer                = require("../../models/customer"),
 require("dotenv").config();
 
 // CONFIG
-require("../../config/login")(passport);
+require("../../config/adminLogin")(passport);
 
 // NODEMAILER CONFIG
 const transport = nodemailer.createTransport({
@@ -145,6 +145,7 @@ exports.addCustomerLogic = (req, res) => {
             age : req.body.age,
             address : req.body.address,
             email : req.body.email,
+            contact : req.body.contact,
             picture : req.file.filename,
             pictureName : req.file.originalname,
             educationalQualification : req.body.educationalQualification,
@@ -201,7 +202,7 @@ exports.addCustomerLogic = (req, res) => {
 exports.editcustomer = (req, res) => {
     Customer.findById({_id : req.params.id})
     .then(customer => {
-        res.render("editcustomer", {
+        res.render("admin/customer/editcustomer", {
             title : "Microfinance Admin Dashboard Edit Customer Form",
             customer : customer
         });
@@ -221,6 +222,8 @@ exports.editCustomerLogic = (req, res) => {
                 age : req.body.age,
                 address : req.body.address,
                 email : req.body.email,
+                picture : req.file.filename,
+                contact : req.body.contact,
                 picture : req.file.filename,
                 pictureName : req.file.originalname,
                 educationalQualification : req.body.educationalQualification,
@@ -249,6 +252,7 @@ exports.editCustomerLogic = (req, res) => {
             age : req.body.age,
             address : req.body.address,
             email : req.body.email,
+            contact : req.body.contact,
             educationalQualification : req.body.educationalQualification,
             nationalIDNumber : req.body.nationalIDNumber,
             numberOfFamilyMembers : req.body.numberOfFamilyMembers,
@@ -288,6 +292,18 @@ exports.deleteCustomer = (req, res) => {
     .catch(err => {
         console.log(err);
         res.redirect("back");
+    });
+}
+
+//Getting the files
+exports.files = (req, res) => {
+    gfs.files.findOne({filename : req.params.filename}, (err, foundFiles) => {
+        if(foundFiles){
+            const readstream = gfs.createReadStream(foundFiles.filename);
+            readstream.pipe(res);
+        }else{
+            console.log(err);
+        }
     });
 }
 

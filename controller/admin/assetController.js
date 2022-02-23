@@ -155,9 +155,7 @@ exports.editAssetLogic = (req, res) => {
             acres : req.body.acres,
             plotNo : req.body.plotNo,
             houseNo : req.body.houseNo,
-            otherIdentification : req.body.otherIdentification,
-            document : req.files.filename,
-            documentName : req.files.originalName,
+            otherIdentification : req.body.otherIdentification
         })
         .then(asset => {
             console.log("CUSTOMER ASSET INFORMATION UPDATED SUCCESSFULLY");

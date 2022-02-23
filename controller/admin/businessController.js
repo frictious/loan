@@ -66,7 +66,7 @@ exports.addBusinessInformationLogic = (req, res) => {
                 if(!err){
                     console.log("MAIL SENT SUCCESSFULLY");
                     console.log("CUSTOMER BUSINESS INFORMATION ADDED SUCCESSFULLY");
-                    res.redirect(`/admin/guarantor/add/${customer.id}`);
+                    res.redirect(`/admin/asset/add/${customer.id}`);
                 }else{
                     console.log(err);
                     res.redirect("back");

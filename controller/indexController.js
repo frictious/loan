@@ -5,7 +5,7 @@ const   nodemailer              = require('nodemailer'),
         passport                = require("passport"),
         Request                 = require("../models/requests");
 
-require("../config/login")(passport);
+require("../config/adminLogin")(passport);
 
 require("dotenv").config();
 //Nodemailer configuration

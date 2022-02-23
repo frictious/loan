@@ -1,5 +1,5 @@
 const   Customer                = require("../../models/customer"),
-        User                    = require("../../models/user"),
+        User                    = require("../../models/customer"),
         Guarantor               = require("../../models/guarantor"),
         Asset                   = require("../../models/assets"),
         Business                = require("../../models/business"),
@@ -12,8 +12,20 @@ require("../../config/adminLogin")(passport);
 
 // DASHOBARD PAGE
 exports.index = (req, res) => {
-    res.render("admin/index", {
-        title : "Loan System Admin Dashboard"
+    User.find({})
+    .then(users => {
+        Loan.find({})
+        .then(loans => {
+            res.render("admin/index", {
+                title : "Loan System Admin Dashboard",
+                loans : loans,
+                users : users
+            });
+        })
+    })
+    .catch(err => {
+        console.log(err);
+        res.redirect("back");
     });
 }
 
@@ -153,4 +165,10 @@ exports.loginLogic = (req, res, next) => {
         successRedirect : "/admin",
         failureRedirect : "/admin/login"
     })(req, res, next);
+}
+
+// LOGOUT LOGIC
+exports.logout = (req, res) => {
+    req.logout();
+    res.redirect("/admin/login");
 }

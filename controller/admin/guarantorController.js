@@ -148,53 +148,26 @@ exports.editGuarantor = (req, res) => {
 
 // EDIT GUARANTOR FORM LOGIC
 exports.edituarantorLogic = (req, res) => {
-    if(req.body.picture !== ""){
-        Guarantor.findByIdAndUpdate({_id : req.params.id}, {
-            name : req.body.name,
-            age : req.body.age,
-            picture : req.files.filename,
-            pictureName : req.files.originalName,
-            residentialAddress : req.body.residentialAddress,
-            permanentAddress : req.body.permanentAddress,
-            mobile : req.body.mobile,
-            occupation : req.body.occupation,
-            designation : req.body.designation,
-            relationship : req.body.relationship,
-            nationalIDNumber : req.body.nationalIDNumber,
-            monthlyIncome : req.body.monthlyIncome,
-            customer : req.params.id
-        })
-        .then(GUARANTOR => {
-            console.log("CUSTOMER GUARANTOR INFORMATION UPDATED SUCCESSFULLY");
-            res.redirect("back");
-        })    
-        .catch(err => {
-            console.log(err);
-            res.redirect("back");
-        });
-    }else{
-        Guarantor.findByIdAndUpdate({_id : req.params.id}, {
-            name : req.body.name,
-            age : req.body.age,
-            residentialAddress : req.body.residentialAddress,
-            permanentAddress : req.body.permanentAddress,
-            mobile : req.body.mobile,
-            occupation : req.body.occupation,
-            designation : req.body.designation,
-            relationship : req.body.relationship,
-            nationalIDNumber : req.body.nationalIDNumber,
-            monthlyIncome : req.body.monthlyIncome,
-            customer : req.params.id
-        })
-        .then(guarantor => {
-            console.log("CUSTOMER GUARANTOR INFORMATION UPDATED SUCCESSFULLY");
-            res.redirect("back");
-        })    
-        .catch(err => {
-            console.log(err);
-            res.redirect("back");
-        });
-    }
+    Guarantor.findByIdAndUpdate({_id : req.params.id}, {
+        name : req.body.name,
+        age : req.body.age,
+        residentialAddress : req.body.residentialAddress,
+        permanentAddress : req.body.permanentAddress,
+        mobile : req.body.mobile,
+        occupation : req.body.occupation,
+        designation : req.body.designation,
+        relationship : req.body.relationship,
+        nationalIDNumber : req.body.nationalIDNumber,
+        monthlyIncome : req.body.monthlyIncome            
+    })
+    .then(guarantor => {
+        console.log("CUSTOMER GUARANTOR INFORMATION UPDATED SUCCESSFULLY");
+        res.redirect("back");
+    })    
+    .catch(err => {
+        console.log(err);
+        res.redirect("back");
+    });
 }
 
 // END OF GUARANTOR SECTION
