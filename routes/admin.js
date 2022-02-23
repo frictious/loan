@@ -74,7 +74,7 @@ const cpUpload = files.fields([{ name: 'front', maxCount: 1 }, { name: 'back', m
 {name : 'inside', maxCount : 1}, {name : 'outside', maxCount : 1}]);
 
 // DASHBOARD
-router.get("/", adminController.index);
+router.get("/", isLoggedIn, adminController.index);
 
 // ====================================================================================
 // CUSTOMERS

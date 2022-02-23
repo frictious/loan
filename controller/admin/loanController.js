@@ -371,37 +371,35 @@ exports.editLoanLogic = (req, res) => {
             groupmemberten : req.body.groupmemberten
         })
         .then(loan => {
-            if(loan.amoundDue >= 0){
-                Customer.findById({_id : req.params.id})
-                .then(customer => {
-                    const mailOptions = {
-                        from: process.env.EMAIL,
-                        to: customer.email,
-                        subject: "BRAC SL Microfinance Loan Information",
-                        html: `<p>Dear ${customer.name},</p> <p>The sum of <strong>Le ${req.body.amountPaying}</strong> has been paid for the <strong>Le ${loan.amount}</strong> loan you took on the <strong>${loan.from}</strong>.</p>
-                        <p>The remaining amount to pay is <strong>Le ${loan.amoundDue}</strong>
-                        .</p>
-                        
-                        <p>You will receive confirmation of payments messages anytime you pay your loaned money until it is complete.</p>
-            
-                        <p>Regards</p>
-            
-                        <p>BRAC SL Management</p>
-                        `
+            Customer.findById({_id : loan.customer})
+            .then(customer => {
+                const mailOptions = {
+                    from: process.env.EMAIL,
+                    to: customer.email,
+                    subject: "BRAC SL Microfinance Loan Information",
+                    html: `<p>Dear ${customer.name},</p> <p>The sum of <strong>Le ${req.body.amountPaying}</strong> has been paid for the <strong>Le ${loan.amount}</strong> loan you took on the <strong>${loan.from}</strong>.</p>
+                    <p>The remaining amount to pay is <strong>Le ${loan.amoundDue}</strong>
+                    .</p>
+                    
+                    <p>You will receive confirmation of payments messages anytime you pay your loaned money until it is complete.</p>
+        
+                    <p>Regards</p>
+        
+                    <p>BRAC SL Management</p>
+                    `
+                }
+        
+                transport.sendMail(mailOptions, (err, mail) => {
+                    if(!err){
+                        console.log("MAIL SENT SUCCESSFULLY");
+                        console.log("CUSTOMER LOAN INFORMATION UPDATED SUCCESSFULLY");
+                        res.redirect("back");
+                    }else{
+                        console.log(err);
+                        res.redirect("back");
                     }
-            
-                    transport.sendMail(mailOptions, (err, mail) => {
-                        if(!err){
-                            console.log("MAIL SENT SUCCESSFULLY");
-                            console.log("CUSTOMER LOAN INFORMATION UPDATED SUCCESSFULLY");
-                            res.redirect("back");
-                        }else{
-                            console.log(err);
-                            res.redirect("back");
-                        }
-                    });
-                })
-            }
+                });
+            })
         })
     })
     .catch(err => {
